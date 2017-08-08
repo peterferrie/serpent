@@ -1,8 +1,5 @@
 /**
-  Copyright © 2015 Odzhan
-  Copyright © 2008 Daniel Otte
-
-  All Rights Reserved.
+  Copyright © 2015 Odzhan. All Rights Reserved.
   
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are
@@ -34,54 +31,54 @@
 
 // xor dst blk by src
 void serpent_whiten (serpent_blk *dst, serpent_key *src, int idx) {
-  uint8_t i;
-  serpent_blk *p=(serpent_blk*)&src->x[idx];
-  
-  for (i=0; i<SERPENT_BLK_LEN/4; i++) {
-    dst->w[i] ^= p->w[i];
-  }
+    uint8_t i;
+    serpent_blk *p=(serpent_blk*)&src->x[idx];
+    
+    for (i=0; i<SERPENT_BLK_LEN/4; i++) {
+      dst->w[i] ^= p->w[i];
+    }
 }
 
 // initial/final permutation
 void permute (serpent_blk *out, 
   serpent_blk *in, int type) 
 {
-  uint8_t cy;   // carry 
-  uint8_t n, m;
-  
-  for (n=0; n<SERPENT_BLK_LEN/4; n++) {
-    out->w[n]=0;
-  }
-  
-  // initial
-  if (type==SERPENT_IP)
-  {
-    for (n=0; n<16; n++) {
-      for (m=0; m<8; m++) {
-        cy = in->w[m%4] & 1;
-        in->w[m%4] >>= 1;
-        out->b[n] = (cy << 7) | (out->b[n] >> 1);
+    uint8_t cy;   // carry 
+    uint8_t n, m;
+    
+    for (n=0; n<SERPENT_BLK_LEN/4; n++) {
+      out->w[n]=0;
+    }
+    
+    // initial
+    if (type==SERPENT_IP)
+    {
+      for (n=0; n<16; n++) {
+        for (m=0; m<8; m++) {
+          cy = in->w[m%4] & 1;
+          in->w[m%4] >>= 1;
+          out->b[n] = (cy << 7) | (out->b[n] >> 1);
+        }
+      }
+    } else {
+      // final
+      for (n=0; n<4; n++) {
+        for (m=0; m<32; m++) {
+          cy = in->w[n] & 1;
+          in->w[n] >>= 1;
+          out->w[m%4] = (cy << 31) | (out->w[m%4] >> 1);
+        }
       }
     }
-  } else {
-    // final
-    for (n=0; n<4; n++) {
-      for (m=0; m<32; m++) {
-        cy = in->w[n] & 1;
-        in->w[n] >>= 1;
-        out->w[m%4] = (cy << 31) | (out->w[m%4] >> 1);
-      }
-    }
-  }
 }
 
 #define HI_NIBBLE(b) (((b) >> 4) & 0x0F)
 #define LO_NIBBLE(b) ((b) & 0x0F)
 
 uint32_t serpent_gen_w (uint32_t *b, uint32_t i) {
-  uint32_t ret;
-  ret = b[0] ^ b[3] ^ b[5] ^ b[7] ^ GOLDEN_RATIO ^ i;
-  return ROTL32(ret, 11);
+    uint32_t ret;
+    ret = b[0] ^ b[3] ^ b[5] ^ b[7] ^ GOLDEN_RATIO ^ i;
+    return ROTL32(ret, 11);
 } 
 
 // substitution box
@@ -139,99 +136,93 @@ uint8_t sbox_inv[8][8] =
 // linear transformation
 void serpent_lt (serpent_blk* x, int enc) 
 {
-  uint32_t x0, x1, x2, x3;
-  
-  // load
-  x0=x->w[0];
-  x1=x->w[1];
-  x2=x->w[2];
-  x3=x->w[3];
-  
-  if (enc==SERPENT_DECRYPT) {
-    x2 = ROTL32(x2, 10);
-    x0 = ROTR32(x0, 5);
-    x2 ^= x3 ^ (x1 << 7);
-    x0 ^= x1 ^ x3;
-    x3 = ROTR32(x3, 7);
-    x1 = ROTR32(x1, 1);
-    x3 ^= x2 ^ (x0 << 3);
-    x1 ^= x0 ^ x2;
-    x2 = ROTR32(x2,  3);
-    x0 = ROTR32(x0, 13);
-  } else {
-    x0 = ROTL32(x0, 13);
-    x2 = ROTL32(x2,  3);
-    x1 ^= x0 ^ x2;
-    x3 ^= x2 ^ (x0 << 3);
-    x1 = ROTL32(x1, 1);
-    x3 = ROTL32(x3, 7);
-    x0 ^= x1 ^ x3;
-    x2 ^= x3 ^ (x1 << 7);
-    x0 = ROTL32(x0, 5);
-    x2 = ROTR32(x2, 10);
-  }
-  // save
-  x->w[0]=x0;
-  x->w[1]=x1;
-  x->w[2]=x2;
-  x->w[3]=x3;
+    uint32_t x0, x1, x2, x3;
+    
+    // load
+    x0=x->w[0];
+    x1=x->w[1];
+    x2=x->w[2];
+    x3=x->w[3];
+    
+    if (enc==SERPENT_DECRYPT) {
+      x2 = ROTL32(x2, 10);
+      x0 = ROTR32(x0, 5);
+      x2 ^= x3 ^ (x1 << 7);
+      x0 ^= x1 ^ x3;
+      x3 = ROTR32(x3, 7);
+      x1 = ROTR32(x1, 1);
+      x3 ^= x2 ^ (x0 << 3);
+      x1 ^= x0 ^ x2;
+      x2 = ROTR32(x2,  3);
+      x0 = ROTR32(x0, 13);
+    } else {
+      x0 = ROTL32(x0, 13);
+      x2 = ROTL32(x2,  3);
+      x1 ^= x0 ^ x2;
+      x3 ^= x2 ^ (x0 << 3);
+      x1 = ROTL32(x1, 1);
+      x3 = ROTL32(x3, 7);
+      x0 ^= x1 ^ x3;
+      x2 ^= x3 ^ (x1 << 7);
+      x0 = ROTL32(x0, 5);
+      x2 = ROTR32(x2, 10);
+    }
+    // save
+    x->w[0]=x0;
+    x->w[1]=x1;
+    x->w[2]=x2;
+    x->w[3]=x3;
 }
 
 // create serpent keys. only 256-bit is supported
 void serpent_setkey (serpent_key *key, void *input) 
 {
-  union {
-    uint8_t b[32];
-    uint32_t w[8];
-  } s_ws;
-  
-  uint32_t i, j;
-  
-  // copy key input to local buffer
-  memcpy (&s_ws.b[0], input, SERPENT_KEY256);
-  
-  // expand the key
-  for (i=0; i<=SERPENT_ROUNDS; i++) {
-    for (j=0; j<4; j++) {
-      key->x[i][j] = serpent_gen_w (s_ws.w, i*4+j);
-      memmove (&s_ws.b, &s_ws.b[4], 7*4);
-      s_ws.w[7] = key->x[i][j];
+    union {
+      uint8_t b[32];
+      uint32_t w[8];
+    } s_ws;
+    
+    uint32_t i, j;
+    
+    // copy key input to local buffer
+    memcpy (&s_ws.b[0], input, SERPENT_KEY256);
+    
+    // expand the key
+    for (i=0; i<=SERPENT_ROUNDS; i++) {
+      for (j=0; j<4; j++) {
+        key->x[i][j] = serpent_gen_w (s_ws.w, i*4+j);
+        memmove (&s_ws.b, &s_ws.b[4], 7*4);
+        s_ws.w[7] = key->x[i][j];
+      }
+      serpent_subbytes ((serpent_blk*)&key->x[i], 3 - i, SERPENT_ENCRYPT);
     }
-    serpent_subbytes ((serpent_blk*)&key->x[i], 3 - i, SERPENT_ENCRYPT);
-  }
 }
 
 void serpent_encrypt (void *in, serpent_key *key, int enc)
 {
-  int8_t i;
-  serpent_blk *out=in;
-  
-  if (enc==SERPENT_DECRYPT)
-  {
-    i=SERPENT_ROUNDS;
-    serpent_whiten (out, key, i);
-    for (;;) {
-      --i;
-      // apply sbox
-      serpent_subbytes (out, i, SERPENT_DECRYPT);
-      // xor with subkey
+    int8_t i;
+    serpent_blk *out=in;
+    
+    if (enc==SERPENT_DECRYPT)
+    {
+      i=SERPENT_ROUNDS;
       serpent_whiten (out, key, i);
-      if (i==0) break;
-      // linear transformation
-      serpent_lt (out, SERPENT_DECRYPT);
-    }
-  } else {
-    i=0;
-    for (;;) {
-      // xor with subkey
+      for (;;) {
+        --i;
+        serpent_subbytes (out, i, enc);
+        serpent_whiten (out, key, i);
+        if (i==0) break;
+        serpent_lt (out, enc);
+      }
+    } else {
+      i=0;
+      for (;;) {
+        serpent_whiten (out, key, i);
+        serpent_subbytes (out, i, enc);
+        if (++i == SERPENT_ROUNDS) break;
+        serpent_lt (out, enc);
+      }
       serpent_whiten (out, key, i);
-      // apply sbox
-      serpent_subbytes (out, i, SERPENT_ENCRYPT);
-      if (++i == SERPENT_ROUNDS) break;
-      // linear transformation
-      serpent_lt (out, SERPENT_ENCRYPT);
     }
-    serpent_whiten (out, key, i);
-  }
 }
 

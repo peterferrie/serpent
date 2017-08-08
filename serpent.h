@@ -1,8 +1,5 @@
 /**
-  Copyright © 2015 Odzhan
-  Copyright © 2008 Daniel Otte
-
-  All Rights Reserved.
+  Copyright © 2015 Odzhan. All Rights Reserved.
   
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are
@@ -33,39 +30,7 @@
 #ifndef SERPENT_H
 #define SERPENT_H
 
-#include <stdint.h>
-
-#ifdef INTRINSICS
-#define memcpy(x,y,z) __movsb(x,y,z)
-#define memmove(x,y,z) __movsb(x,y,z)
-#define memset(x,y,z) __stosb(x,y,z)
-#define ROTL32(x,r) _rotl(x,r)
-#define ROTR32(x,r) _rotr(x,r)
-#else
-
-#define U8V(v)  ((uint8_t)(v)  & 0xFFU)
-#define U16V(v) ((uint16_t)(v) & 0xFFFFU)
-#define U32V(v) ((uint32_t)(v) & 0xFFFFFFFFUL)
-#define U64V(v) ((uint64_t)(v) & 0xFFFFFFFFFFFFFFFFULL)
-
-#define ROTL8(v, n) \
-  (U8V((v) << (n)) | ((v) >> (8 - (n))))
-
-#define ROTL16(v, n) \
-  (U16V((v) << (n)) | ((v) >> (16 - (n))))
-
-#define ROTL32(v, n) \
-  (U32V((v) << (n)) | ((v) >> (32 - (n))))
-
-#define ROTL64(v, n) \
-  (U64V((v) << (n)) | ((v) >> (64 - (n))))
-
-#define ROTR8(v, n) ROTL8(v, 8 - (n))
-#define ROTR16(v, n) ROTL16(v, 16 - (n))
-#define ROTR32(v, n) ROTL32(v, 32 - (n))
-#define ROTR64(v, n) ROTL64(v, 64 - (n))
-
-#endif
+#include "macros.h"
 
 #define GOLDEN_RATIO    0x9e3779b9l
 

@@ -1,8 +1,5 @@
 ;
-;  Copyright © 2015 Odzhan, Peter Ferrie.
-;  Copyright © 2008 Daniel Otte
-;
-;  All Rights Reserved.
+;  Copyright © 2015 Odzhan, Peter Ferrie. All Rights Reserved.
 ;
 ;  Redistribution and use in source and binary forms, with or without
 ;  modification, are permitted provided that the following conditions are

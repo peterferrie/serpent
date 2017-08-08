@@ -48,16 +48,17 @@ size_t hex2bin (void *bin, char hex[]) {
 void dump_hex (char *s, uint8_t bin[], int len)
 {
   int i;
-  printf ("\n%s=", s);
+  printf ("%s=", s);
   for (i=0; i<len; i++) {
     printf ("%02x", bin[i]);
   }
+  putchar('\n');
 }
 
 int main (void)
 {
-  uint8_t ct1[32], pt1[32], pt2[32], key[64];
-  int klen, plen, clen, i, j;
+  uint8_t ct1[32], pt1[32], key[64];
+  int plen, clen, i, j;
   serpent_key skey;
   serpent_blk ct2;
   uint32_t *p;
@@ -67,7 +68,7 @@ int main (void)
   for (i=0; i<sizeof(keys)/sizeof(char*); i++) {
     clen=hex2bin (ct1, cipher[i]);
     plen=hex2bin (pt1, plain[i]);
-    klen=hex2bin (key, keys[i]);
+    hex2bin (key, keys[i]);
   
     // set key
     memset (&skey, 0, sizeof (skey));
@@ -92,16 +93,16 @@ int main (void)
     dump_hex ("ciphertext", ct2.b, 16);
     
     if (memcmp (ct1, ct2.b, clen) == 0) {
-      printf ("\nEncryption OK");
+      printf ("Encryption OK\n");
       serpent_encrypt (ct2.b, &skey, SERPENT_DECRYPT);
       if (memcmp (pt1, ct2.b, plen) == 0) {
-        printf ("\nDecryption OK");
+        printf ("Decryption OK\n");
         dump_hex ("plaintext", ct2.b, 16);
       } else {
-        printf ("\nDecryption failed");
+        printf ("Decryption failed\n");
       }
     } else {
-      printf ("\nEncryption failed");
+      printf ("Encryption failed\n");
     }
   }
   return 0;

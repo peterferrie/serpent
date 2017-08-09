@@ -72,9 +72,4 @@ extern "C" {
 }
 #endif
 
-#ifdef USE_ASM
-  #define serpent_setkey(x,y) serpent_setkeyx(x,y)
-  #define serpent_encrypt(x,y,z) serpent_encryptx(x,y,z)
-#endif
-
 #endif
